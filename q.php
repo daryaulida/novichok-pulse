@@ -30,8 +30,8 @@ $first = $n ? explode(' ', $n['name'])[0] : '';
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#16a34a">
 <title>Как вам у нас?</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=3">
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css?v=4">
 </head>
 <body class="q-body">
 <div class="q">
@@ -47,7 +47,7 @@ $first = $n ? explode(' ', $n['name'])[0] : '';
   </div>
 <?php else: ?>
   <div class="q-head">
-    <div class="q-logo"><span class="dot"></span>Пульс новичка</div>
+    <div class="q-logo">Пульс новичка · опрос</div>
     <h1><?= h($first) ?>, как вам у нас?</h1>
     <p class="muted">Вы с нами <?= day_of($n) ?>-й день. 4 вопроса, меньше минуты. Ответы видит только HR, чтобы вовремя помочь.</p>
   </div>
@@ -56,9 +56,9 @@ $first = $n ? explode(' ', $n['name'])[0] : '';
     <fieldset>
       <legend>1. Понятно, что от вас ждут на работе?</legend>
       <div class="opts three">
-        <label><input type="radio" name="q_clear" value="1"><span>😟<em>Нет</em></span></label>
-        <label><input type="radio" name="q_clear" value="2"><span>😐<em>Частично</em></span></label>
-        <label><input type="radio" name="q_clear" value="3"><span>🙂<em>Да</em></span></label>
+        <label><input type="radio" name="q_clear" value="1"><span>Нет</span></label>
+        <label><input type="radio" name="q_clear" value="2"><span>Частично</span></label>
+        <label><input type="radio" name="q_clear" value="3"><span>Да</span></label>
       </div>
     </fieldset>
     <fieldset>
@@ -71,9 +71,9 @@ $first = $n ? explode(' ', $n['name'])[0] : '';
     <fieldset>
       <legend>3. График и нагрузка подходят?</legend>
       <div class="opts three">
-        <label><input type="radio" name="q_schedule" value="1"><span>😟<em>Нет</em></span></label>
-        <label><input type="radio" name="q_schedule" value="2"><span>😐<em>Терпимо</em></span></label>
-        <label><input type="radio" name="q_schedule" value="3"><span>🙂<em>Да</em></span></label>
+        <label><input type="radio" name="q_schedule" value="1"><span>Нет</span></label>
+        <label><input type="radio" name="q_schedule" value="2"><span>Терпимо</span></label>
+        <label><input type="radio" name="q_schedule" value="3"><span>Да</span></label>
       </div>
     </fieldset>
     <fieldset>

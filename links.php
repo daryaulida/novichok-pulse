@@ -39,5 +39,5 @@ layout_head('Ссылки на опрос', 'links');
 </section>
 <div class="toast" id="toast"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="assets/app.js?v=3"></script>
+<script src="assets/app.js?v=4"></script>
 <?php layout_foot();

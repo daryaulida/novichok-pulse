@@ -52,6 +52,7 @@ layout_head('Пульт', 'dash');
       </ul>
       <?php if (!empty($r['last']['comment'])): ?><blockquote>«<?= h($r['last']['comment']) ?>»</blockquote><?php endif; ?>
       <div class="card-foot">
+        <span class="card-score"><?= $r['score'] ?> баллов риска</span>
         <span class="muted small">Руководитель: <?= h($n['manager']) ?></span>
         <button class="btn primary js-task" data-id="<?= $n['id'] ?>">Задача в Битрикс24</button>
       </div>
@@ -118,5 +119,5 @@ layout_head('Пульт', 'dash');
 <script>
 window.PULSE_CHART = <?= json_encode(['buckets' => $st['buckets'], 'depts' => DEPTS, 'data' => $st['chart']], JSON_UNESCAPED_UNICODE) ?>;
 </script>
-<script src="assets/app.js?v=3"></script>
+<script src="assets/app.js?v=4"></script>
 <?php layout_foot();

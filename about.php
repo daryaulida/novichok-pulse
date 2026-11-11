@@ -44,5 +44,5 @@ layout_head('Как считается риск', 'about');
   <form class="js-reset inline"><input name="key" placeholder="Ключ сброса"><button class="btn small">Сбросить</button></form>
 </section>
 <div class="toast" id="toast"></div>
-<script src="assets/app.js?v=3"></script>
+<script src="assets/app.js?v=4"></script>
 <?php layout_foot();

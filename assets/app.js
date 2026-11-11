@@ -93,18 +93,18 @@
   const cv = document.getElementById('leftChart');
   if (cv && window.Chart && window.PULSE_CHART) {
     const P = window.PULSE_CHART;
-    const colors = { sklad: '#0f766e', shop: '#16a34a', sales: '#84cc16', office: '#94a3b8' };
+    const colors = { sklad: '#1c1b18', shop: '#a8322a', sales: '#a86a12', office: '#b9b2a2' };
     new Chart(cv, {
       type: 'bar',
       data: {
         labels: P.buckets,
         datasets: Object.keys(P.depts).map((k) => ({
-          label: P.depts[k], data: P.buckets.map((b) => P.data[k][b]), backgroundColor: colors[k], borderRadius: 4, maxBarThickness: 46,
+          label: P.depts[k], data: P.buckets.map((b) => P.data[k][b]), backgroundColor: colors[k], borderRadius: 0, maxBarThickness: 56,
         })),
       },
       options: {
         responsive: true,
-        plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { family: 'Inter' } } }, tooltip: { mode: 'index' } },
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { family: 'Onest' } } }, tooltip: { mode: 'index' } },
         scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, ticks: { precision: 0 }, title: { display: true, text: 'человек' } } },
       },
     });

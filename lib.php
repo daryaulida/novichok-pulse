@@ -301,12 +301,12 @@ function layout_head(string $title, string $active = ''): void { ?>
 <meta name="robots" content="noindex">
 <title><?= h($title) ?> · Пульс новичка</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=3">
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css?v=4">
 </head>
 <body>
 <header class="top">
-  <a class="brand" href="index.php"><span class="dot"></span>Пульс новичка</a>
+  <a class="brand" href="index.php">Пульс новичка <small>адаптация · 90 дней</small></a>
   <nav>
     <a href="index.php" class="<?= $active === 'dash' ? 'on' : '' ?>">Пульт</a>
     <a href="links.php" class="<?= $active === 'links' ? 'on' : '' ?>">Ссылки на опрос</a>
