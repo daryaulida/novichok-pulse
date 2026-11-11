@@ -6,7 +6,7 @@ $st = stats();
 $red = array_filter($all, fn($n) => $n['risk']['level'] === 'red');
 $silent = array_filter($all, fn($n) => (bool)array_filter($n['risk']['reasons'], fn($r) => str_starts_with($r, 'Не ответил')));
 // «Поговорить сегодня»: высокий риск, без открытой задачи и без разговора после сигнала
-$today = array_values(array_filter($all, fn($n) => $n['risk']['level'] === 'red' && !$n['open_task']));
+$today = array_values(array_filter($all, fn($n) => $n['risk']['level'] === 'red' && !$n['open_task'] && !$n['risk']['talked']));
 usort($today, fn($a, $b) => $b['risk']['score'] <=> $a['risk']['score']);
 $inWork = array_values(array_filter($all, fn($n) => (bool)$n['open_task']));
 usort($all, fn($a, $b) => $b['risk']['score'] <=> $a['risk']['score']);

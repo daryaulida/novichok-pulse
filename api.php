@@ -53,7 +53,11 @@ switch ($action) {
         add_action($id, 'talk', mb_substr($text, 0, 1000));
         // Закрываем задачу в Б24, если она есть
         if ($n['open_task'] && $n['open_task']['b24_task_id']) {
-            b24_call('task.commentitem.add', ['TASKID' => $n['open_task']['b24_task_id'], 'FIELDS' => ['POST_MESSAGE' => "Итог разговора: $text"]]);
+            // В новых карточках задач комментарии ушли в чат, поэтому дописываем итог в описание
+            $tid = $n['open_task']['b24_task_id'];
+            $cur = b24_call('tasks.task.get', ['taskId' => $tid, 'select' => ['DESCRIPTION']]);
+            $desc = $cur['ok'] ? (string)($cur['result']['task']['description'] ?? '') : '';
+            b24_call('tasks.task.update', ['taskId' => $tid, 'fields' => ['DESCRIPTION' => "[B]Итог разговора (" . date('d.m.Y') . "):[/B] $text\n\n" . $desc]]);
             b24_call('tasks.task.complete', ['taskId' => $n['open_task']['b24_task_id']]);
         }
         out(['ok' => true]);

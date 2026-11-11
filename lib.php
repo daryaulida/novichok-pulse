@@ -63,11 +63,12 @@ function seed(PDO $pdo): void {
     $managers = ['sklad' => 'Руслан Гайдук', 'shop' => 'Ирина Остапчук', 'sales' => 'Вадим Лешкевич', 'office' => 'Светлана Рудь'];
     $mentors = ['sklad' => ['Николай Бут','Геннадий Шпак'], 'shop' => ['Оксана Вашкевич','Людмила Кот'], 'sales' => ['Глеб Станкевич'], 'office' => ['Марина Дубок']];
 
-    $person = function () use ($first_m, $first_f, $last) {
-        $f = mt_rand(0, 1);
+    // Грузчики и водители в демо — мужчины, остальные должности — любые
+    $person = function (string $role = '') use ($first_m, $first_f, $last) {
+        $f = in_array($role, ['Грузчик', 'Водитель-экспедитор'], true) ? 0 : mt_rand(0, 1);
         $ln = $last[array_rand($last)];
-        if (in_array($ln, ['Савицк','Сидоренк'])) $ln .= $f ? 'ая' : ($ln === 'Сидоренк' ? 'о' : 'ий');
-        elseif ($f && preg_match('/(ович|евич)$/u', $ln)) { /* не склоняется */ }
+        if ($ln === 'Савицк') $ln .= $f ? 'ая' : 'ий';
+        if ($ln === 'Сидоренк') $ln .= 'о';
         return ($f ? $first_f[array_rand($first_f)] : $first_m[array_rand($first_m)]) . ' ' . $ln;
     };
     $pick_role = function () use ($roles) {
@@ -83,8 +84,8 @@ function seed(PDO $pdo): void {
     // Сценарии ответов: хорошие, сомневающиеся, тревожные
     $profiles = ['ok','ok','ok','ok','ok','doubt','doubt','alarm','silent'];
     $comments = [
-        'alarm' => ['Никто толком не объяснил, где что лежит на складе','Ставят на смены в выходные, хотя договаривались иначе','Не знаю, к кому идти с вопросами, все заняты','Обещали другую зарплату на первом месяце','Тяжело, норма выработки непонятна'],
-        'doubt' => ['Пока непривычно, но разбираюсь','Много информации сразу','Хотелось бы больше обучения по кассе','Не всегда понятно, кто ставит задачи'],
+        'alarm' => ['Никто толком не объяснил, как здесь всё устроено','Ставят на смены в выходные, хотя договаривались иначе','Не знаю, к кому идти с вопросами, все заняты','Обещали другую зарплату на первом месяце','Тяжело, непонятно, какой результат от меня ждут'],
+        'doubt' => ['Пока непривычно, но разбираюсь','Много информации сразу','Хотелось бы больше обучения в первые дни','Не всегда понятно, кто ставит задачи'],
         'ok'    => ['', '', 'Всё нравится, коллектив хороший', 'Спасибо наставнику!', ''],
     ];
 
@@ -97,7 +98,7 @@ function seed(PDO $pdo): void {
         $mentor = $hasMentor ? $mentors[$dept][array_rand($mentors[$dept])] : null;
         $profile = $profiles[array_rand($profiles)];
         if (!$hasMentor && $profile === 'ok' && mt_rand(0, 1)) $profile = 'doubt';
-        $ins->execute([$person(), $role, $dept, $units[$dept][array_rand($units[$dept])], $managers[$dept], $mentor,
+        $ins->execute([$person($role), $role, $dept, $units[$dept][array_rand($units[$dept])], $managers[$dept], $mentor,
             '+375 29 ' . mt_rand(100, 999) . '-' . mt_rand(10, 99) . '-' . mt_rand(10, 99),
             $hire, bin2hex(random_bytes(8)), 'active', null, null]);
         $id = (int)$pdo->lastInsertId();
@@ -131,10 +132,10 @@ function seed(PDO $pdo): void {
             $tenure = $early ? (mt_rand(1, 100) <= 55 ? mt_rand(3, 21) : mt_rand(22, 89)) : mt_rand(91, 330);
             $ld = $hire->modify("+$tenure days");
             if ($ld > $t) $ld = $t->modify('-' . mt_rand(1, 30) . ' days');
-            $ins->execute([$person(), $role, $dept, $units[$dept][array_rand($units[$dept])], $managers[$dept], null, null,
+            $ins->execute([$person($role), $role, $dept, $units[$dept][array_rand($units[$dept])], $managers[$dept], null, null,
                 $hire->format('Y-m-d'), bin2hex(random_bytes(8)), 'left', $ld->format('Y-m-d'), $reasons[array_rand($reasons)]]);
         } else {
-            $ins->execute([$person(), $role, $dept, $units[$dept][array_rand($units[$dept])], $managers[$dept], null, null,
+            $ins->execute([$person($role), $role, $dept, $units[$dept][array_rand($units[$dept])], $managers[$dept], null, null,
                 $hire->format('Y-m-d'), bin2hex(random_bytes(8)), 'passed', null, null]);
         }
     }
@@ -196,12 +197,13 @@ function risk(array $n, array $checkins, array $actions): array {
 
     // Разговор после последнего тревожного сигнала снижает риск
     $since = $last['created_at'] ?? $n['hire_date'];
+    $talked = false;
     foreach ($actions as $a) {
-        if ($a['type'] === 'talk' && $a['created_at'] >= $since) { $score = max(0, $score - 20); $reasons[] = 'С новичком поговорили после опроса (−20)'; break; }
+        if ($a['type'] === 'talk' && $a['created_at'] >= $since) { $score = max(0, $score - 20); $reasons[] = 'С новичком поговорили после опроса (−20)'; $talked = true; break; }
     }
 
     $level = $score >= 60 ? 'red' : ($score >= 30 ? 'yellow' : 'green');
-    return ['score' => $score, 'level' => $level, 'reasons' => $reasons, 'last' => $last, 'day' => $day];
+    return ['score' => $score, 'level' => $level, 'reasons' => $reasons, 'last' => $last, 'day' => $day, 'talked' => $talked];
 }
 
 function load_active(): array {
@@ -280,13 +282,13 @@ function b24_task_url(string $taskId): string {
 function task_text(array $n): array {
     $r = $n['risk'];
     $dept = DEPTS[$n['dept']];
-    $title = "Новичок: поговорить с {$n['name']} ({$n['position']}, день {$r['day']})";
+    $title = "Поговорить с новичком: {$n['name']} — {$n['position']}, день {$r['day']}";
     $lines = [
         "[B]Почему:[/B] риск ухода {$r['score']} баллов.",
     ];
     foreach ($r['reasons'] as $why) $lines[] = "— $why";
     if (!empty($r['last']['comment'])) $lines[] = "\n[B]Комментарий новичка:[/B] «{$r['last']['comment']}»";
-    $lines[] = "\n[B]Кто:[/B] {$n['name']}, {$n['position']}, $dept / {$n['unit']}, на работе с " . date('d.m.Y', strtotime($n['hire_date'])) . ". Наставник: " . ($n['mentor'] ?: 'не назначен') . '.';
+    $lines[] = "\n[B]Кто:[/B] {$n['name']}, {$n['position']}, {$n['unit']}, на работе с " . date('d.m.Y', strtotime($n['hire_date'])) . ". Наставник: " . ($n['mentor'] ?: 'не назначен') . '.';
     $lines[] = "\n[B]Что сделать (15 минут):[/B]\n1. Поговорить лично, не в чате.\n2. Спросить: что сейчас самое сложное? что мы обещали и не сделали?\n3. Если нет наставника — назначить.\n4. Отметить итог разговора в «Пульсе новичка».";
     $lines[] = "\nКарточка: " . rtrim((string)cfg('base_url', ''), '/') . '/person.php?id=' . $n['id'];
     return [$title, implode("\n", $lines)];
